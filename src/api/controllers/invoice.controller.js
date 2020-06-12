@@ -1,14 +1,14 @@
 import joi from 'joi';
 import Invoice from "../models/invoice.model";
 
-const invoices = [
-    {_id: "1", item: 'Amazon Product', qty: 10, date: new Date()},
-    {_id: "2", item: 'Facebook Product', qty: 5, date: new Date()},
-    {_id: "3", item: 'Google Product', qty: 1, date: new Date()}
-];
 export default {
     findAll(req, res, next){
-        Invoice.find()
+        const {page = 1, perPage = 10} = req.query;
+        const options = {
+            page : parseInt(page, 10),
+            limit : parseInt(perPage, 10)
+        };
+        Invoice.paginate({}, options)
         .then(invoices => res.json(invoices))
         .catch(error => res.status(500).json(error));
     },
