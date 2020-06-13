@@ -1,12 +1,13 @@
 import joi from 'joi';
-import Invoice from "../models/invoice.model";
+import Invoice from "./invoice.model";
 
 export default {
     findAll(req, res, next){
         const {page = 1, perPage = 10, filter, sortField, sortDir} = req.query;
         const options = {
             page : parseInt(page, 10),
-            limit : parseInt(perPage, 10)
+            limit : parseInt(perPage, 10),
+            populate : 'client'
         };
         const query = {};
         if(filter){
@@ -29,6 +30,7 @@ export default {
             qty: joi.number().integer().required(),
             date: joi.date().required(),
             due: joi.date().required(),
+            client: joi.string().required(),
             tax: joi.number().optional(),
             rate: joi.number().optional()
         });
@@ -65,6 +67,7 @@ export default {
             qty: joi.number().optional(),
             date: joi.date().optional(),
             due: joi.date().optional(),
+            client: joi.string().optional(),
             tax: joi.number().optional(),
             rate: joi.number().optional()
         });

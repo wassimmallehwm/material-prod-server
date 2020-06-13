@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
 
 const invoiceSchema = mongoose.Schema({
@@ -23,6 +23,11 @@ const invoiceSchema = mongoose.Schema({
     },
     tax: {
         type: Number,
+    },
+    client: {
+        ref: 'Client',
+        type: Schema.Types.ObjectId,
+        required: true
     }
 })
 invoiceSchema.plugin(mongoosePaginate);
