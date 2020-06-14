@@ -1,11 +1,13 @@
 import express from 'express';
 const app = express();
-
-import logger from 'morgan';
-import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+
+import {config} from './config/env/dev'
+import {router} from './api/index';
+import { globalMiddlewares } from './api/middlewares/global';
+
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/invoices',{
+mongoose.connect('mongodb://localhost/' + config.database,{
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
@@ -15,20 +17,7 @@ mongoose.connect('mongodb://localhost/invoices',{
     console.error('Failed ' + err);
 });
 
-
-import {router} from './api/index';
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization, token');
-    res.setHeader('Access-Control-Allow-Methods', 
-    'GET, POST, PATCH, DELETE, OPTIONS, PUT');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended : false}));
+globalMiddlewares(app);
 app.use('/api', router);
 
 app.use((error, req, res, next) => {
@@ -36,6 +25,6 @@ app.use((error, req, res, next) => {
     return res.json({error: error.message});
 })
 
-app.listen(3000, () => {
+app.listen(config.port, () => {
     console.log('Running on port 3000');
 })
