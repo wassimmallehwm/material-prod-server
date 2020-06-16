@@ -11,11 +11,19 @@ export default {
             if(error && error.details){
                 return res.status(400).json(error);
             }
-            const user = await User.create(value);
-            return res.json({
-                success : true,
-                message : 'User created successfully'
-            });
+            const checkUser = await User.findOne({email: value.email});
+            if(checkUser) {
+                return res.status(400).json({
+                    success : false,
+                    message : 'Email already exist !'
+                });
+            } else {
+                const user = await User.create(value);
+                return res.json({
+                    success : true,
+                    message : 'User created successfully'
+                });
+            }
         } catch(error){
             res.status(500).json(error);
         }
