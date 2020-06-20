@@ -45,6 +45,7 @@ export default {
     },
     findOne(req, res){
         Invoice.findById(req.params.id)
+        .populate('client')
         .then(invoice => {
             if(!invoice){
                 return res.status(404).json({error: 'Invoice not found !'});

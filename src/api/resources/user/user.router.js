@@ -5,3 +5,4 @@ export const userRouter = express.Router();
 
 userRouter.post('/signup', userController.signup);
 userRouter.post('/login', userController.login);
+userRouter.post('/refresh', passport.authenticate('jwt', {session: false}), userController.refreshToken);

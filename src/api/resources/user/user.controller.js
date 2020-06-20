@@ -56,5 +56,21 @@ export default {
         } catch(error){
             res.status(500).json(error);
         }
+    },
+    async refreshToken(req, res){
+        try{
+            const user = await User.findOne({'_id': req.user._id});
+            if(!user) {
+                return res.status(400).json({error: 'User Not Found'});
+            }
+            const token = jwt.sign({id: user._id}, config.secretKey, {expiresIn: '1d'});
+            return res.json({
+                success : true,
+                token : token
+            });
+        } catch(error){
+            console.log(error);
+            res.status(500).json(error);
+        }
     }
 }
