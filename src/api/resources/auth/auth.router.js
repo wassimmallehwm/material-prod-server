@@ -36,3 +36,15 @@ authRouter.get('/facebook/callback',
         authController.sendJWTToken(req, res);
     }
 );
+
+authRouter.get(
+    '/authenticate',
+    // passport.authenticate('jwt', {session: false}),
+    authController.authenticate
+);
+
+authRouter.get(
+    '/logout',
+    passport.authenticate('jwt', {session: false}),
+    authController.logout
+);
