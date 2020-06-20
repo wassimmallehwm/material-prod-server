@@ -11,14 +11,19 @@ export default {
             if(error && error.details){
                 return res.status(400).json(error);
             }
-            const checkUser = await User.findOne({email: value.email});
+            const checkUser = await User.findOne({'local.email': value.email});
             if(checkUser) {
                 return res.status(400).json({
                     success : false,
                     message : 'Email already exist !'
                 });
             } else {
-                const user = await User.create(value);
+                const salt = await bcryptjs.genSalt();
+                const hashedPassword = await bcryptjs.hash(value.password, salt);
+                const user = await new User({});
+                user.local.email = value.email;
+                user.local.password = hashedPassword;
+                await user.save();
                 return res.json({
                     success : true,
                     message : 'User created successfully'
@@ -35,7 +40,7 @@ export default {
             if(error && error.details){
                 return res.status(400).json(error);
             }
-            const user = await User.findOne({email: value.email});
+            const user = await User.findOne({'local.email': value.email});
             if(!user) {
                 return res.status(400).json({error: 'User Not Found'});
             }
@@ -51,8 +56,5 @@ export default {
         } catch(error){
             res.status(500).json(error);
         }
-    },
-    async test (req, res) {
-        return res.json(req.user);
     }
 }

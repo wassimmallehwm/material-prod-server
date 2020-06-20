@@ -1,31 +1,23 @@
 import mongoose from 'mongoose';
-import bcryptjs from 'bcryptjs';
 
 const userSchema = mongoose.Schema({
-    email: {
-        type: String,
-        required: true,
-        lowercase: true,
-        unique: true
+    local : {
+        email: String,
+        password: String
     },
-    password: {
-        type: String,
-        required: true
+    google : {
+        id: String,
+        email : String,
+        displayName: String,
+        token: String
     },
-    email: {
-        type: String,
-        required: true
+    facebook : {
+        id: String,
+        displayName: String,
+        token: String
     }
 });
 
-// ============ PASSWORD ENCRYPTION ============
-userSchema.pre('save', async function() {
-    if(this.isModified('password') || this.isNew){
-        const salt = await bcryptjs.genSalt();
-        const hash = await bcryptjs.hash(this.password, salt);
-        this.password = hash;
-    }
-})
 
 
 export default mongoose.model('User', userSchema);
