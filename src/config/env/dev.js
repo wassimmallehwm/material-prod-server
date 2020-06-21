@@ -12,5 +12,13 @@ export const config = {
         clientID : '',
         clientSecret : '',
         callback : ''
+    },
+    mailConfig : {
+        sender : '',
+        passwd : '',
+        host: '',
+        port: ,
+        secure: ,
+        requireTLS: ,
     }
 }

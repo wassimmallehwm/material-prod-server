@@ -1,8 +1,8 @@
 import userService from "./user.service";
 import User from "./user.model";
+import { getJWTToken, encryptPassword } from "../../modules/utils";
 import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import {config} from '../../../config/env/dev'
+
 
 export default {
     async signup(req, res){
@@ -18,8 +18,7 @@ export default {
                     message : 'Email already exist !'
                 });
             } else {
-                const salt = await bcryptjs.genSalt();
-                const hashedPassword = await bcryptjs.hash(value.password, salt);
+                const hashedPassword = await encryptPassword(value.password);
                 const user = await new User({});
                 user.local.email = value.email;
                 user.local.name = value.name;
@@ -48,12 +47,13 @@ export default {
             if(!match) {
                 return res.status(401).json({error: 'Invalid Credentials'});
             }
-            const token = jwt.sign({id: user._id}, config.secretKey, {expiresIn: '1d'});
+            const token = getJWTToken({id: user._id});
             return res.json({
                 success : true,
                 token : token
             });
         } catch(error){
+            console.log(error);
             res.status(500).json(error);
         }
     },
@@ -63,10 +63,64 @@ export default {
             if(!user) {
                 return res.status(400).json({error: 'User Not Found'});
             }
-            const token = jwt.sign({id: user._id}, config.secretKey, {expiresIn: '1d'});
+            const token = getJWTToken({id: user._id});
             return res.json({
                 success : true,
                 token : token
+            });
+        } catch(error){
+            console.log(error);
+            res.status(500).json(error);
+        }
+    },
+    async forgotPassword(req, res){
+        try{
+            const {value, error} = userService.validateForgotPAsswordSchema(req.body);
+            if(error && error.details){
+                return res.status(400).json(error);
+            }
+            const criteria = {
+                $or: [
+                    {'google.email' : value.email},
+                    {'facebook.email' : value.email},
+                    {'local.email' : value.email}
+                ]
+            }
+            const user = await User.findOne(criteria);
+            if(!user){
+                res.status(500).json({message : 'User Not Found !'});
+            }
+            const token = getJWTToken({id: user._id});
+            const sanitizedUser = userService.getUser(user);
+            userService.sendResetPasswordMail(sanitizedUser, token);
+            return res.json({
+                message : "Reset Email has been sent"
+            });
+        } catch(error){
+            console.log(error);
+            res.status(500).json(error);
+        }
+    },
+    async resetPassword(req, res){
+        try{
+            let {password} = req.body;
+            if(!password) {
+                return res.status(400).json({error: 'Password is required !'});
+            }
+
+            const user = await User.findOne({'_id': req.user._id});
+            const sanitizedUser = userService.getUser(user);
+            if(!user.local.email) {
+                user.local.email = sanitizedUser.email;
+                user.local.name = sanitizedUser.name;
+            }
+
+            const hashedPassword = await encryptPassword(password);
+            user.local.password = hashedPassword;
+            await user.save();
+
+            return res.json({
+                message : 'Password reseted'
             });
         } catch(error){
             console.log(error);

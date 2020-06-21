@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
     },
     facebook : {
         id: String,
+        email : String,
         displayName: String,
         token: String
     }

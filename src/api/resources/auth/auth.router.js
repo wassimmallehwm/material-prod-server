@@ -39,7 +39,7 @@ authRouter.get('/facebook/callback',
 
 authRouter.get(
     '/authenticate',
-    // passport.authenticate('jwt', {session: false}),
+    passport.authenticate('jwt', {session: false}),
     authController.authenticate
 );
 
