@@ -7,6 +7,7 @@ import { config } from '../../config/env/dev';
 import session from 'express-session';
 import User from '../resources/user/user.model';
 import { configFacebookStrategy } from './passport.facebook';
+import pdf from 'express-pdf';
 
 export const globalMiddlewares = (app) => {
     app.use((req, res, next) => {
@@ -23,6 +24,7 @@ export const globalMiddlewares = (app) => {
         resave: true,
         saveUninitialized: true
     }))
+    app.use(pdf);
     app.use(logger('dev'));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended : false}));

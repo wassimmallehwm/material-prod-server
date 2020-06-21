@@ -16,7 +16,9 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "express-pdf": "^1.2.2",
     "express-session": "^1.17.1",
+    "html-pdf": "^2.2.0",
     "http-status-code": "^2.1.0",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
@@ -26,7 +28,8 @@
     "passport": "^0.4.1",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth": "^2.0.0",
-    "passport-jwt": "^4.0.0"
+    "passport-jwt": "^4.0.0",
+    "phantomjs-prebuilt": "^2.1.16"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

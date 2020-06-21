@@ -1,5 +1,7 @@
 import joi from 'joi';
 import Invoice from "./invoice.model";
+import invoiceService from './invoice.service';
+import userService from '../user/user.service';
 
 export default {
     findAll(req, res, next){
@@ -81,5 +83,26 @@ export default {
         .then(invoice => {
             return res.json(invoice);
         }).catch(error => res.status(500).json(error))
+    },
+    async download(req, res){
+        try{
+            const {id} = req.params;
+            const invoice = await Invoice.findById(id).populate('client');
+            if(!invoice){
+                return res.status(500).json({msg: 'Invocie Not Found !'});
+            } else {
+                const {subTotal, total} = invoiceService.getTotal(invoice);
+                const user = userService.getUser(req.user);
+                const htmlBody = invoiceService.getInvoiceBody(invoice, total, subTotal, user);
+                const html = invoiceService.getInvoiceTemplate(htmlBody);
+                res.pdfFromHTML({
+                    filename: invoice.item + '.pdf',
+                    htmlContent: html
+                })
+            }
+        } catch(error) {
+            console.log(error);
+            return res.status(500).send(error);
+        }
     }
 }

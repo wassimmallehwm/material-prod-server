@@ -22,6 +22,7 @@ export default {
                 const hashedPassword = await bcryptjs.hash(value.password, salt);
                 const user = await new User({});
                 user.local.email = value.email;
+                user.local.name = value.name;
                 user.local.password = hashedPassword;
                 await user.save();
                 return res.json({
@@ -33,10 +34,9 @@ export default {
             res.status(500).json(error);
         }
     }, 
-    
     async login(req, res){
         try{
-            const {value, error} = userService.validateCreateSchema(req.body);
+            const {value, error} = userService.validateLoginSchema(req.body);
             if(error && error.details){
                 return res.status(400).json(error);
             }

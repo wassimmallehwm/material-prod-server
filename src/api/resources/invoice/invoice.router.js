@@ -23,3 +23,7 @@ invoiceRouter.route('/').post(
     passport.authenticate('jwt', {session: false}),
     invoiceController.create
 );
+invoiceRouter.route('/:id/download').get(
+    passport.authenticate('jwt', {session: false}),
+    invoiceController.download
+);
